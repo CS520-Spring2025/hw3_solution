@@ -119,8 +119,6 @@ public class TestExample {
         double totalCost = getTotalCost();
         assertEquals(0.00, totalCost, 0.01);
     }
-    
-
         
     @Test
     public void testInvalidInputHandling() {
@@ -209,5 +207,48 @@ public class TestExample {
 	for (Transaction currDisplayedTransaction : displayedTransactions) {
 	    assertEquals(categoryToFilterBy, currDisplayedTransaction.getCategory());
 	}
+    }
+
+    @Test
+    public void testUndoWhenNoTransactions() {
+        // This is new test case for hw3: For the Controller
+        //
+        // Check pre-conditions
+        assertEquals(0, model.getTransactions().size());
+        assertEquals(0.0, getTotalCost(), 0.01);
+        
+        // Call the unit under test
+        boolean statusCode = controller.removeSelectedTransaction(0);
+
+        // Check the post-conditions
+        assertEquals(statusCode, false);
+        assertEquals(0, model.getTransactions().size());
+        assertEquals(0.0, getTotalCost(), 0.01);
+    }
+
+    @Test
+    public void testUndoAfterAddTransaction() {
+        // This is an extra new test case: For the Controller
+        //
+        // Setup
+        double amount = 50.0;
+        String category = "food";
+        controller.addTransaction(amount, category);
+        
+        // Check pre-conditions
+        assertEquals(1, model.getTransactions().size());
+        Transaction firstTransaction = model.getTransactions().get(0);
+        checkTransaction(amount, category, firstTransaction);
+        assertEquals(amount, getTotalCost(), 0.01);
+        
+        // Call the unit under test
+        boolean statusCode = controller.removeSelectedTransaction(0);
+        
+        // Check the post-conditions
+        assertEquals(statusCode, true);
+        
+        // After undoing the transaction, check if the transaction is removed
+        assertEquals(0, model.getTransactions().size());
+        assertEquals(0.0, getTotalCost(), 0.01);
     }
 }
