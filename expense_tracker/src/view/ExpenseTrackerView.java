@@ -6,6 +6,7 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import model.Transaction;
 
@@ -24,6 +25,8 @@ public class ExpenseTrackerView extends JFrame {
   private JButton amountFilterBtn;
 
   private JButton clearFilterBtn;
+
+  private JButton removeSelectedTransactionBtn;
     
   private List<Transaction> displayedTransactions = new ArrayList<>(); // ✅ Moved here
 
@@ -35,6 +38,8 @@ public class ExpenseTrackerView extends JFrame {
     this.model = new DefaultTableModel(columnNames, 0);
 
     transactionsTable = new JTable(model);
+    // Only permit single selection for the remove selected transition
+    transactionsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     addTransactionBtn = new JButton("Add Transaction");
 
     JLabel amountLabel = new JLabel("Amount:");
@@ -54,6 +59,9 @@ public class ExpenseTrackerView extends JFrame {
     amountFilterBtn = new JButton("Filter by Amount");
 
     clearFilterBtn = new JButton("Clear Filter");
+
+    removeSelectedTransactionBtn = new JButton("Remove selected transaction");
+    removeSelectedTransactionBtn.setToolTipText("First select a valid transaction and then click this button to delete it");
     
     JPanel inputPanel = new JPanel();
     inputPanel.add(amountLabel);
@@ -66,6 +74,7 @@ public class ExpenseTrackerView extends JFrame {
     buttonPanel.add(amountFilterBtn);
     buttonPanel.add(categoryFilterBtn);
     buttonPanel.add(clearFilterBtn);
+    buttonPanel.add(removeSelectedTransactionBtn);
     
     add(inputPanel, BorderLayout.NORTH);
     add(new JScrollPane(transactionsTable), BorderLayout.CENTER); 
@@ -127,6 +136,10 @@ public class ExpenseTrackerView extends JFrame {
   public void addClearFilterListener(ActionListener listener) {
     clearFilterBtn.addActionListener(listener);
   }
+
+  public void addRemoveSelectedTransactionListener(ActionListener listener) {
+    removeSelectedTransactionBtn.addActionListener(listener);
+  }
     
   public void refreshTable(List<Transaction> transactions) {
     model.setRowCount(0);
@@ -156,7 +169,11 @@ public class ExpenseTrackerView extends JFrame {
   }
 
   public List<Transaction> getDisplayedTransactions() {
-    return displayedTransactions;
+    return Collections.unmodifiableList(displayedTransactions);
+  }
+
+  public int getSelectedRowIndex() {
+    return transactionsTable.getSelectedRow();
   }
 
   // Optional: remove if no longer needed

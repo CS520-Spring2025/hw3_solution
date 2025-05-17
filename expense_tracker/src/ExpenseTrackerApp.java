@@ -74,6 +74,16 @@ public class ExpenseTrackerApp {
      controller.setFilter(null);
      controller.applyFilter();
    });
+
+   // Add action listener to the "Undo" button
+   view.addRemoveSelectedTransactionListener(e -> {
+     int selectedRowIndex = view.getSelectedRowIndex();
+     boolean success = controller.removeSelectedTransaction(selectedRowIndex);
+     if (!success) {
+       JOptionPane.showMessageDialog(view, "Please select a valid transaction to undo.");
+       view.toFront();
+     }
+   });
     
   }
 }

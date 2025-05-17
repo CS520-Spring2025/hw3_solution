@@ -66,5 +66,21 @@ public class ExpenseTrackerController {
     }
     view.displayFilteredTransactions(filteredTransactions);
   }
+
+   public boolean removeSelectedTransaction(int selectedRowIndex) {
+    // Safety checks
+    //
+    // Need to use the filtered transactions from the view and not
+    // all of the transactions from the model
+    List<Transaction> transactions = view.getDisplayedTransactions();
+    if (selectedRowIndex < 0 || selectedRowIndex >= transactions.size()) {
+      return false;
+    }
+    // Add breakpoint here to check if the transaction is removed
+    Transaction transactionToRemove = transactions.get(selectedRowIndex);
+    model.removeTransaction(transactionToRemove);
+    refresh();
+    return true;
+  }
     
 }

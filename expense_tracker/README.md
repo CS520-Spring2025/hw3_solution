@@ -1,4 +1,4 @@
-# hw2
+# hw3
 
 The homework will be based on this project named "Expense Tracker",where users will be able to add/remove daily transaction. 
 
@@ -19,3 +19,4 @@ This code is compiled with ```openjdk 17.0.7 2023-04-18```. Please update your J
 ## Features
 - Add a new transaction: First specify the amount and category. Then click on the Add transaction button. Adds the new transaction to the list and updates the total cost.
 - Filter the transaction list by either amount or category: First specify the amount or category to be matched. Then click the corresponding Filter button. Highlights the matching transactions in the list.
+- Select a transaction row from the table and click the "Remove selected transaction" button to delete it. If no valid transaction is selected, the user is shown an error message.
