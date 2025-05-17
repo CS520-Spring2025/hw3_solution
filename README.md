@@ -116,6 +116,146 @@ The app update status after undo:
 ![Expense Tracker App after update](app_3_afterUndo.png)
 
 
+
+# Export to CSV – Design Outline
+
+**Goal:**
+Allow users to export all transactions to a `.csv` file with input validation and clear UI feedback.
+
+---
+
+##  MVC Integration
+
+### **Model**
+
+Add method to generate CSV data:
+
+```java
+public String getTransactionsAsCSV() {
+  StringBuilder sb = new StringBuilder("Amount,Category,Date\n");
+  for (Transaction t : transactions) {
+    sb.append(t.getAmount()).append(",")
+      .append(t.getCategory()).append(",")
+      .append(t.getTimestamp()).append("\n");
+  }
+  return sb.toString();
+}
+```
+
+*Alternative:* Return `List<String[]>` or use a `CSVExporter` class.
+
+---
+
+### **View**
+
+Add input and button components:
+
+```java
+private JButton exportCSVButton;
+private JTextField filenameField;
+
+filenameField = new JTextField("expenses.csv", 15);
+exportCSVButton = new JButton("Export to CSV");
+exportCSVButton.setToolTipText("Save transactions to CSV");
+
+JPanel exportPanel = new JPanel();
+exportPanel.add(new JLabel("File Name:"));
+exportPanel.add(filenameField);
+exportPanel.add(exportCSVButton);
+add(exportPanel, BorderLayout.NORTH);
+```
+
+*Alternative:* Use `JFileChooser` for file selection.
+
+---
+
+### **Controller**
+
+Handle export button click:
+
+```java
+public boolean exportTransactionsToCSV(String filename) {
+  if (!InputValidation.isValidFilename(filename)) {
+    view.displayErrorMessage("Invalid filename.");
+    return false;
+  }
+  try (FileWriter fw = new FileWriter(filename)) {
+    fw.write(model.getTransactionsAsCSV());
+    view.displayInfoMessage("Export successful.");
+    return true;
+  } catch (IOException e) {
+    view.displayErrorMessage("Export failed.");
+    return false;
+  }
+}
+```
+
+*Alternative:* Delegate to `CSVExporter` utility class.
+
+---
+
+## Input Validation
+
+```java
+public static boolean isValidFilename(String filename) {
+  return filename != null && filename.matches("[\\w,\\s-]+\\.csv");
+}
+```
+
+---
+
+## UI Design Best Practices
+
+* Tooltips on buttons
+* Error/info messages:
+
+```java
+JOptionPane.showMessageDialog(this, msg, "Error", JOptionPane.ERROR_MESSAGE);
+```
+
+---
+
+## OO Design: Open–Closed Principle
+
+Use interface + exporter class:
+
+```java
+public interface TransactionExporter {
+  boolean exportTransactions(List<Transaction> txns, String filename);
+}
+
+public class CSVExporter implements TransactionExporter {
+  public boolean exportTransactions(List<Transaction> txns, String filename) {
+    // write logic
+  }
+}
+```
+
+---
+
+## Best Practices
+
+Avoid magic strings:
+
+```java
+public static final String DEFAULT_CSV_FILENAME = "expenses.csv";
+public static final String CSV_HEADERS = "Amount,Category,Date";
+```
+
+---
+
+## Design Flexibility
+
+Encouraged variations:
+
+* `JFileChooser` vs. text input
+* Append `.csv` automatically
+* Exporter class or inline logic
+* Use of interface or factory for future formats (CSV/JSON)
+
+**We also accepted other solutions than the one provided here**
+---
+
 ## Documentation
 
 To generate and view Javadoc:
